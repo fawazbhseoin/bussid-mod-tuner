@@ -73,7 +73,7 @@ The official copy is at https://fawazbhseo.in/tools/bussid-mod-tuner/. You are w
 - **GitHub Pages:** in your fork go to *Settings, Pages*, choose *Deploy from a branch*, pick `main` and the `/ (root)` folder.
 - **Your own computer:** double-click `index.html`. It runs from your disk with no server.
 
-Keep the credit line in the footer when you host a copy, as the [licence](LICENSE) asks.
+The [licence](LICENSE) only requires that you keep the copyright notice, but please also keep the credit line in the footer when you host a copy.
 
 ## Development
 
