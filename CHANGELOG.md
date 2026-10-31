@@ -2,6 +2,12 @@
 
 All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-10-31
+
+### Changed
+- README now links the live tool at https://fawazbhseo.in/tools/bussid-mod-tuner/ and explains how to use it, with a short FAQ.
+- Hosting instructions cover cPanel and Hostinger-style hosts, GitHub Pages and running from disk.
+
 ## [1.0.0] - 2026-10-31
 
 ### Added

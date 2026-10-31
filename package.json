@@ -1,11 +1,11 @@
 {
   "name": "bussid-mod-tuner",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Edit top speed, engine power, gears and handling in BUSSID vehicle mods, in your browser. Files never leave your device.",
   "license": "MIT",
   "private": false,
   "author": "Fawaz BH (https://fawazbhseo.in)",
-  "homepage": "https://fawazbhseoin.github.io/bussid-mod-tuner/",
+  "homepage": "https://fawazbhseo.in/tools/bussid-mod-tuner/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fawazbhseoin/bussid-mod-tuner.git"

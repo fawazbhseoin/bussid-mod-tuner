@@ -7,7 +7,31 @@ Edit **top speed, engine power, gears and handling** in Bus Simulator Indonesia 
   <img src="docs/screenshots/neon.png" alt="Neon look" width="280">
 </p>
 
-**Try it:** https://fawazbhseoin.github.io/bussid-mod-tuner/ (available once GitHub Pages is switched on for this repository, see [Hosting](#hosting-your-own-copy)).
+## Use it online
+
+**Open the tool: https://fawazbhseo.in/tools/bussid-mod-tuner/**
+
+It works in any modern browser on a phone, tablet or computer. Nothing to install, no account, and no upload: your mod file stays on your device.
+
+1. Open the link above.
+2. Tap **Choose .bussidmod file** and pick your vehicle mod.
+3. Change the values you want, or tap **Fast preset (300 km/h)**. Tap **Fit gears to top speed** after you change the top speed.
+4. Tap **Save edited mod**. The edited copy downloads to your device.
+5. Copy that file into BUSSID the way you normally install mods.
+
+If your browser adds `.txt` to the end of the saved file name, rename it so it ends in `.bussidmod`.
+
+### Questions
+
+**Is my mod uploaded anywhere?** No. The page reads and edits the file inside your browser. There is no server. See [SECURITY.md](SECURITY.md).
+
+**Does it change my original file?** No. It saves a new edited copy. Keep the original as a backup anyway.
+
+**Does it work offline?** Open the page once, then save it (*Save page as*) and use it from your device. The fonts will fall back to system fonts.
+
+**My mod shows "Not found in this mod".** That mod uses a different layout from the one this tool was built on. Please [open an issue](https://github.com/fawazbhseoin/bussid-mod-tuner/issues/new/choose) and follow the steps in [CONTRIBUTING.md](CONTRIBUTING.md) so it can be added. Do not attach the mod itself.
+
+**The bus is too fast, too slow or unstable.** Lower or raise `force` (engine power) first, then check tyre grip and anti-roll. Use **Reset to file values** to start again.
 
 ## What it does
 
@@ -43,10 +67,13 @@ node tools/cli.js mod.bussidmod out.bussidmod --set force=45000 maxSpeed=250 --f
 
 ## Hosting your own copy
 
-The whole app is one file, `index.html`.
+The official copy is at https://fawazbhseo.in/tools/bussid-mod-tuner/. You are welcome to host your own, because the whole app is one file, `index.html`.
 
-- **GitHub Pages:** in the repository go to *Settings, Pages*, choose *Deploy from a branch*, pick `main` and the `/ (root)` folder.
-- **Anywhere else:** upload `index.html` to any static host, or open it straight from your disk.
+- **Any web host (cPanel, Hostinger, etc.):** upload `index.html` to a folder on your site, for example `public_html/tools/bussid-mod-tuner/`.
+- **GitHub Pages:** in your fork go to *Settings, Pages*, choose *Deploy from a branch*, pick `main` and the `/ (root)` folder.
+- **Your own computer:** double-click `index.html`. It runs from your disk with no server.
+
+Keep the credit line in the footer when you host a copy, as the [licence](LICENSE) asks.
 
 ## Development
 
