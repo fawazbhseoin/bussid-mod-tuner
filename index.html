@@ -1,0 +1,285 @@
+<title>BUSSID Mod Tuner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Orbitron:wght@600;700&display=swap">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%2307090f'/%3E%3Crect x='7' y='13' width='34' height='27' rx='5' fill='%2327e4ff'/%3E%3Crect x='11' y='17' width='26' height='10' rx='2' fill='%2307090f'/%3E%3Ccircle cx='15' cy='34' r='2.5' fill='%2307090f'/%3E%3Ccircle cx='33' cy='34' r='2.5' fill='%2307090f'/%3E%3Cpath d='M15 10 Q24 3 33 10' fill='none' stroke='%23ff3df0' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* Layout: one narrow column, three steps like a spec sheet. Two looks share one token set: Clean (follows light/dark) and Neon (always dark). */
+:root{
+  --bg:#f1f3f1; --surface:#ffffff; --fg:#17201d; --muted:#5b6862; --line:#d3dad6;
+  --accent:#0a6c86; --accent-2:#d98a00; --accent-fg:#ffffff; --warn:#a15c00; --ok:#1d7a46; --field:#f6f8f7;
+  --glow:none; --bg-art:none; --radius:6px; --h2-color:var(--muted); --h1-size:2.1rem; --h1-track:.01em;
+  --display:'Barlow Condensed','Arial Narrow',sans-serif; --body:'Barlow',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101614; --surface:#18211e; --fg:#e8eeeb; --muted:#97a6a0; --line:#2b3833;
+  --accent:#58c4de; --accent-2:#f0b429; --accent-fg:#06222b; --warn:#e0a24a; --ok:#5fcf8f; --field:#121a17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101614; --surface:#18211e; --fg:#e8eeeb; --muted:#97a6a0; --line:#2b3833;
+  --accent:#58c4de; --accent-2:#f0b429; --accent-fg:#06222b; --warn:#e0a24a; --ok:#5fcf8f; --field:#121a17; color-scheme:dark}
+:root[data-look="neon"]{
+  --bg:#07090f; --surface:#0d111b; --fg:#e6ecff; --muted:#8c99bd; --line:#222a44;
+  --accent:#27e4ff; --accent-2:#ff3df0; --accent-fg:#021018; --warn:#ffb020; --ok:#3dffa0; --field:#090d17;
+  --glow:0 0 16px rgba(39,228,255,.45);
+  --bg-art:radial-gradient(900px 420px at 88% -8%,rgba(255,61,240,.17),transparent 62%),radial-gradient(700px 360px at 0% 0%,rgba(39,228,255,.14),transparent 62%);
+  --radius:2px; --h2-color:var(--accent); --h1-size:1.55rem; --h1-track:.07em;
+  --display:'Orbitron','Barlow Condensed',sans-serif; color-scheme:dark}
+*{box-sizing:border-box}
+body{background-color:var(--bg);background-image:var(--bg-art);background-repeat:no-repeat;color:var(--fg);font:16px/1.5 var(--body);
+  padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;gap:14px;align-items:center;flex:1 1 280px;min-width:0}
+.logo{width:48px;height:48px;flex:none;filter:drop-shadow(var(--glow))}
+.lg-body{fill:var(--accent)} .lg-glass{fill:var(--surface)} .lg-arc{fill:none;stroke:var(--accent-2);stroke-width:2.6;stroke-linecap:round}
+h1{font:700 var(--h1-size)/1.05 var(--display);letter-spacing:var(--h1-track);margin:0;text-transform:uppercase;text-wrap:balance}
+.lede{margin:4px 0 0;color:var(--muted);max-width:60ch;font-size:.95rem}
+.looks{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;flex:none}
+.looks button{border:0;border-radius:0;min-height:40px;padding:8px 14px;background:var(--surface);color:var(--muted);font-weight:600}
+.looks button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);box-shadow:var(--glow)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:600 1.1rem/1.1 var(--display);letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--h2-color)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button,.btn{font:600 .95rem var(--body);padding:10px 16px;border-radius:var(--radius);border:1px solid var(--line);background:var(--field);color:var(--fg);cursor:pointer;min-height:44px}
+button.primary,.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);box-shadow:var(--glow)}
+button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+#fileInfo{font-family:var(--mono);font-size:.85rem;color:var(--muted);overflow-wrap:anywhere}
+#status{font-size:.92rem}
+#status.ok{color:var(--ok)} #status.warn{color:var(--warn)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:0}
+#tGears{min-width:430px}
+th{font:600 .75rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.name b{font-weight:600} td.name small{display:block;color:var(--muted);font-size:.8rem;line-height:1.3}
+td.cur{font-family:var(--mono);font-size:.9rem;color:var(--muted);white-space:nowrap}
+input[type=number]{width:100%;min-width:76px;font:500 .95rem var(--mono);padding:8px;border:1px solid var(--line);border-radius:var(--radius);background:var(--field);color:var(--fg);min-height:40px}
+input.changed{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent),var(--glow)}
+.group{display:none;flex-direction:column;gap:6px}
+body.loaded .group{display:flex} body.loaded #placeholder{display:none}
+#placeholder{color:var(--muted);margin:0}
+.note{font-size:.88rem;color:var(--muted);margin:0}
+.note code{font-family:var(--mono);color:var(--fg)}
+.gearset{font:600 .8rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:8px}
+footer{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted);padding-top:4px}
+footer a{color:var(--accent);font-weight:600}
+footer b{color:var(--fg)}
+@media (prefers-reduced-motion:no-preference){button{transition:background .15s,box-shadow .15s}}
+</style>
+
+<main>
+  <header>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 48 48" role="img" aria-label="BUSSID Mod Tuner logo">
+        <rect class="lg-body" x="7" y="13" width="34" height="27" rx="5"/>
+        <rect class="lg-glass" x="11" y="17" width="26" height="10" rx="2"/>
+        <circle class="lg-glass" cx="15" cy="34" r="2.5"/><circle class="lg-glass" cx="33" cy="34" r="2.5"/>
+        <rect class="lg-glass" x="20" y="32.5" width="8" height="3" rx="1.5"/>
+        <path class="lg-arc" d="M15 10 Q24 3 33 10"/>
+      </svg>
+      <div>
+        <h1>BUSSID Mod Tuner</h1>
+        <p class="lede">Change top speed, engine power, gears and handling in a vehicle mod. Your file is edited on your device and never uploaded.</p>
+      </div>
+    </div>
+    <div class="looks" role="group" aria-label="Look">
+      <button type="button" data-look="clean" aria-pressed="true">Clean</button>
+      <button type="button" data-look="neon" aria-pressed="false">Neon</button>
+    </div>
+  </header>
+
+  <section>
+    <h2>1. Open the mod</h2>
+    <div class="row">
+      <label class="btn primary" for="file" tabindex="0" id="pick">Choose .bussidmod file</label>
+      <input type="file" id="file">
+    </div>
+    <div id="fileInfo">No file chosen</div>
+    <div id="status" role="status"></div>
+  </section>
+
+  <section>
+    <h2>2. Set the values</h2>
+    <p id="placeholder">Choose a mod file and its current values appear here, ready to edit.</p>
+    <div class="row group" style="flex-direction:row;gap:10px">
+      <button id="preset" class="primary" type="button">Fast preset (300 km/h)</button>
+      <button id="fit" type="button">Fit gears to top speed</button>
+      <button id="reset" type="button">Reset to file values</button>
+    </div>
+    <div class="group"><div class="tablewrap"><table id="tEngine"></table></div></div>
+    <div class="group"><div class="tablewrap"><table id="tHandling"></table></div></div>
+    <div class="group"><div class="tablewrap"><table id="tGears"></table></div></div>
+    <p class="note group">Leave a box as it is to keep the original value. Boxes with a blue edge are changed.</p>
+  </section>
+
+  <section>
+    <h2>3. Save</h2>
+    <div class="row"><button id="save" class="primary" type="button" disabled>Save edited mod</button></div>
+    <p class="note">The save dialog only allows certain file types, so the file arrives as <code>name.bussidmod.txt</code>. Rename it and delete the <code>.txt</code> at the end, then upload it to BUSSID. Keep your original file as a backup.</p>
+    <div id="saveStatus" role="status" class="note"></div>
+  </section>
+  <footer>
+    <span>Built by <b>Fawaz BH</b> &middot; <a href="https://fawazbhseo.in" target="_blank" rel="noopener">fawazbhseo.in</a></span>
+    <span>Not affiliated with the BUSSID developers. Keep the original mod authors' credits when you share an edited mod.</span>
+  </footer>
+</main>
+
+<script>
+const ENGINE = ['force','maxSpeed','maxRPM','idleRPM','shiftUpRPM'];
+const HANDLING = ['mass','centerOfMassHeightOffset','tireFriction','antiRoll','maxSteerAngle','rollingResistance','maxBrakeForce','tractionControlRatio','brakeAssistRatio','steeringLimitRatio','steeringAssistRatio'];
+const PRESET = {force:60000,maxSpeed:300,tireFriction:4,antiRoll:0.7,centerOfMassHeightOffset:-0.4,rollingResistance:0.06,maxBrakeForce:400000,tractionControlRatio:1,brakeAssistRatio:1,steeringAssistRatio:0.8};
+const SIX_RATIO = [3.0,2.2,1.6,1.2,0.9,0.7];
+const SIX_FRAC = [0.15,0.30,0.45,185/300,0.8,1.0];
+
+function keyBytes(name){const a=new Uint8Array(name.length+1);a[0]=name.length;for(let i=0;i<name.length;i++)a[i+1]=name.charCodeAt(i);return a;}
+function findBytes(buf,pat,from=0,to=buf.length){
+  const n=pat.length,last=Math.min(to,buf.length)-n;
+  let i=buf.indexOf(pat[0],from);
+  while(i!==-1&&i<=last){let k=1;while(k<n&&buf[i+k]===pat[k])k++;if(k===n)return i;i=buf.indexOf(pat[0],i+1);}
+  return -1;
+}
+function parse(buf){
+  const dv=new DataView(buf.buffer,buf.byteOffset,buf.byteLength);
+  const fields={},missing=[];
+  const grab=(names,anchor,lo,hi)=>{for(const n of names){
+    const p=anchor<0?-1:findBytes(buf,keyBytes(n),Math.max(0,anchor-lo),anchor+hi);
+    if(p<0){missing.push(n);continue;}
+    const pos=p+1+n.length;fields[n]={pos,value:dv.getFloat32(pos,true)};}};
+  grab(ENGINE,findBytes(buf,keyBytes('maxRPM')),200,200);
+  grab(HANDLING,findBytes(buf,keyBytes('tireFriction')),400,1500);
+  const ratio=[],shift=[];
+  const gi=findBytes(buf,keyBytes('gears'));
+  if(gi>=0){
+    const r0=findBytes(buf,keyBytes('ratio'),gi),s0=findBytes(buf,keyBytes('shiftNextSpeed'),gi);
+    if(r0>=5&&s0>=5&&buf[r0-5]===6&&buf[s0-5]===6){
+      const rid=buf.slice(r0-4,r0),sid=buf.slice(s0-4,s0);
+      ratio.push(r0+6);shift.push(s0+15);
+      const eq=(i,id)=>buf[i]===id[0]&&buf[i+1]===id[1]&&buf[i+2]===id[2]&&buf[i+3]===id[3];
+      for(let i=s0+15;i<buf.length-8;i++){
+        if(buf[i]!==9)continue;
+        if(eq(i+1,rid)){ratio.push(i+5);i+=8;}
+        else if(eq(i+1,sid)){shift.push(i+5);i+=8;}
+      }
+    }
+  }
+  const n=Math.min(ratio.length,shift.length);
+  const gears=[];const sets=[];let cur=null;
+  for(let k=0;k<n;k++){
+    const r=dv.getFloat32(ratio[k],true),s=dv.getFloat32(shift[k],true);
+    if(!cur||s<gears[k-1].shift){cur=[];sets.push(cur);}
+    gears.push({rpos:ratio[k],spos:shift[k],ratio:r,shift:s});cur.push(k);
+  }
+  return {fields,missing,gears,sets};
+}
+function autoFit(parsed,maxSpeed){
+  const out=parsed.gears.map(g=>({ratio:g.ratio,shift:g.shift}));
+  for(const set of parsed.sets){
+    const n=set.length;
+    set.forEach((gi,k)=>{
+      if(n===6){out[gi]={ratio:SIX_RATIO[k],shift:Math.round(maxSpeed*SIX_FRAC[k])};}
+      else{const r=n===1?1:3*Math.pow(0.7/3,k/(n-1));out[gi]={ratio:Math.round(r*100)/100,shift:Math.round(maxSpeed*(k+1)/n)};}
+    });
+  }
+  return out;
+}
+function apply(buf,parsed,vals,gearVals){
+  const dv=new DataView(buf.buffer,buf.byteOffset,buf.byteLength);
+  for(const [n,f] of Object.entries(parsed.fields)){const v=vals[n];if(Number.isFinite(v))dv.setFloat32(f.pos,v,true);}
+  parsed.gears.forEach((g,k)=>{const gv=gearVals&&gearVals[k];if(!gv)return;
+    if(Number.isFinite(gv.ratio))dv.setFloat32(g.rpos,gv.ratio,true);
+    if(Number.isFinite(gv.shift))dv.setFloat32(g.spos,gv.shift,true);});
+}
+
+
+const LABELS={
+ force:['Engine power','force'],maxSpeed:['Top speed','km/h'],maxRPM:['Max RPM',''],idleRPM:['Idle RPM',''],shiftUpRPM:['Shift-up RPM',''],
+ mass:['Mass','kg'],centerOfMassHeightOffset:['Centre of mass height','lower is steadier'],tireFriction:['Tyre grip',''],antiRoll:['Anti-roll','less body lean'],
+ maxSteerAngle:['Max steering angle','degrees'],rollingResistance:['Rolling resistance','lower is faster'],maxBrakeForce:['Brake force',''],
+ tractionControlRatio:['Traction control',''],brakeAssistRatio:['Brake assist',''],steeringLimitRatio:['Steering limit at speed',''],steeringAssistRatio:['Steering assist','']};
+const $=id=>document.getElementById(id);
+let buf=null,parsed=null,fileName='mod.bussidmod';
+const fmt=v=>{const r=Math.round(v*1000)/1000;return String(r)};
+
+function head(cols){return '<tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>'}
+function fieldRows(title,names){
+  const rows=names.filter(n=>parsed.fields[n]).map(n=>{
+    const f=parsed.fields[n],l=LABELS[n];
+    return `<tr><td class="name"><b>${l[0]}</b><small>${l[1]}</small></td><td class="cur">${fmt(f.value)}</td><td><input type="number" step="any" id="f_${n}" data-orig="${f.value}" data-kind="field" data-name="${n}" value="${fmt(f.value)}"></td></tr>`}).join('');
+  return head([title,'Current','New'])+rows;
+}
+function render(){
+  $('tEngine').innerHTML=fieldRows('Engine',ENGINE);
+  $('tHandling').innerHTML=fieldRows('Handling',HANDLING);
+  let g=head(['Gearbox','Ratio now','Ratio new','Shift now','Shift new']);
+  parsed.sets.forEach((set,si)=>{
+    if(parsed.sets.length>1)g+=`<tr><td colspan="5" class="gearset">Gear set ${si+1}</td></tr>`;
+    set.forEach((gi,k)=>{const x=parsed.gears[gi];
+      g+=`<tr><td class="name"><b>Gear ${k+1}</b></td><td class="cur">${fmt(x.ratio)}</td><td><input type="number" step="any" id="gr_${gi}" data-orig="${x.ratio}" data-kind="ratio" data-gi="${gi}" value="${fmt(x.ratio)}"></td><td class="cur">${fmt(x.shift)}</td><td><input type="number" step="any" id="gs_${gi}" data-orig="${x.shift}" data-kind="shift" data-gi="${gi}" value="${fmt(x.shift)}"></td></tr>`});
+  });
+  $('tGears').innerHTML=parsed.gears.length?g:head(['Gearbox'])+'<tr><td>No gear table found in this mod.</td></tr>';
+  document.querySelectorAll('input[data-orig]').forEach(i=>i.addEventListener('input',mark));
+  document.querySelectorAll('input[data-orig]').forEach(mark2);
+}
+function mark2(i){i.classList.toggle('changed',Number(i.value)!==Number(i.dataset.orig))}
+function mark(e){mark2(e.target)}
+function setVal(id,v){const i=$(id);if(i){i.value=fmt(v);mark2(i)}}
+function currentMax(){const i=$('f_maxSpeed');return i&&Number.isFinite(parseFloat(i.value))?parseFloat(i.value):(parsed.fields.maxSpeed?.value||100)}
+function fitGears(){
+  const fit=autoFit(parsed,currentMax());
+  fit.forEach((g,k)=>{setVal('gr_'+k,g.ratio);setVal('gs_'+k,g.shift)});
+}
+function status(msg,cls){const s=$('status');s.textContent=msg;s.className=cls||''}
+
+$('file').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  status('Reading file…');$('save').disabled=true;document.body.classList.remove('loaded');
+  try{
+    buf=new Uint8Array(await f.arrayBuffer());fileName=f.name;
+    $('fileInfo').textContent=f.name+'  ·  '+(f.size/1048576).toFixed(1)+' MB';
+    parsed=parse(buf);
+    const found=Object.keys(parsed.fields).length;
+    if(found===0){status('No vehicle settings found. This does not look like a BUSSID vehicle mod, or it uses a different layout.','warn');return}
+    render();document.body.classList.add('loaded');$('save').disabled=false;
+    status(`Read ${found} values and ${parsed.gears.length} gears.`+(parsed.missing.length?` Not found in this mod: ${parsed.missing.join(', ')}.`:''),parsed.missing.length?'warn':'ok');
+  }catch(err){status('Could not read this file: '+err.message,'warn')}
+});
+$('pick').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click()}});
+$('preset').addEventListener('click',()=>{
+  for(const [n,v] of Object.entries(PRESET))setVal('f_'+n,v);
+  fitGears();
+});
+$('fit').addEventListener('click',fitGears);
+$('reset').addEventListener('click',()=>document.querySelectorAll('input[data-orig]').forEach(i=>{i.value=fmt(Number(i.dataset.orig));mark2(i)}));
+$('save').addEventListener('click',async()=>{
+  const out=$('saveStatus');out.textContent='Preparing the file…';
+  try{
+  const vals={};document.querySelectorAll('input[data-kind=field]').forEach(i=>{const v=parseFloat(i.value);vals[i.dataset.name]=Number.isFinite(v)?v:undefined});
+  const gv=parsed.gears.map((_,k)=>({ratio:parseFloat($('gr_'+k).value),shift:parseFloat($('gs_'+k).value)}));
+  apply(buf,parsed,vals,gv);
+  out.textContent='Waiting for the save prompt. This can take up to 12 seconds. If a confirmation box appears, accept it.';
+  const base=fileName.replace(/\.bussidmod$/i,'');
+  /* Optional: when the page is hosted inside Claude it uses Claude's save dialog. Everywhere else it falls back to a normal download. */
+  const downloads=(typeof claude!=='undefined'&&claude&&claude.use)?await Promise.race([claude.use('downloads'),new Promise(r=>setTimeout(()=>r(null),12000))]):null;
+  if(!downloads){
+    const outName=base+'_tuned.bussidmod';
+    const url=URL.createObjectURL(new Blob([buf]));
+    const a=document.createElement('a');a.href=url;a.download=outName;a.textContent='Tap here if the download did not start: '+outName;
+    out.textContent='Download started as '+outName+'. This name is already correct, no renaming needed. ';
+    out.appendChild(a);document.body.appendChild(a);a.click();out.appendChild(a);
+    return;
+  }
+  await downloads.save({filename:base+'_tuned.bussidmod.txt',data:new Blob([buf])});
+  out.textContent='Saved. Now rename the file and remove the final .txt.';
+  }catch(err){
+    out.textContent=(err&&err.code==='declined')?'Save cancelled. Tap Save again when ready.':'Could not save ('+((err&&err.code)||'error')+'): '+((err&&err.message)||String(err));
+  }
+});
+function setLook(l){
+  document.documentElement.dataset.look=l;
+  document.querySelectorAll('.looks button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.look===l)));
+  try{localStorage.setItem('bussid-look',l)}catch(e){}
+}
+document.querySelectorAll('.looks button').forEach(b=>b.addEventListener('click',()=>setLook(b.dataset.look)));
+(function(){let s='clean';try{s=localStorage.getItem('bussid-look')||'clean'}catch(e){}setLook(s==='neon'?'neon':'clean')})();
+</script>

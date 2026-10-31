@@ -1,0 +1,20 @@
+{
+  "name": "bussid-mod-tuner",
+  "version": "1.0.0",
+  "description": "Edit top speed, engine power, gears and handling in BUSSID vehicle mods, in your browser. Files never leave your device.",
+  "license": "MIT",
+  "private": false,
+  "author": "Fawaz BH (https://fawazbhseo.in)",
+  "homepage": "https://fawazbhseoin.github.io/bussid-mod-tuner/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fawazbhseoin/bussid-mod-tuner.git"
+  },
+  "keywords": ["bussid", "bus-simulator-indonesia", "mod", "tuner", "bussidmod"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node --test tests/core.test.js",
+    "cli": "node tools/cli.js"
+  }
+}

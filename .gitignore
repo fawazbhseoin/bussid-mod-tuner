@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.log
+
+# Never commit other people's mods. Share findings, not their files.
+*.bussidmod
+*.bussidmod.txt
+!tests/fixtures/*.bussidmod
